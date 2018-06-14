@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2017 Alibaba Group Holding Ltd.
+ * Copyright 1999-2018 Alibaba Group Holding Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,14 +78,21 @@ public class MySqlSchemaStatVisitor extends SchemaStatVisitor implements MySqlAS
             repository.resolve(x);
         }
 
-        setMode(x, Mode.Delete);
+        SQLTableSource from = x.getFrom();
+        if (from != null) {
+            from.accept(this);
+        }
 
-        accept(x.getFrom());
-        accept(x.getUsing());
-        x.getTableSource().accept(this);
+        SQLTableSource using = x.getUsing();
+        if (using != null) {
+            using.accept(this);
+        }
 
-        if (x.getTableSource() instanceof SQLExprTableSource) {
-            TableStat stat = this.getTableStat(x.getExprTableSource());
+        SQLTableSource tableSource = x.getTableSource();
+        tableSource.accept(this);
+
+        if (tableSource instanceof SQLExprTableSource) {
+            TableStat stat = this.getTableStat((SQLExprTableSource) tableSource);
             stat.incrementDeleteCount();
         }
 
@@ -1352,6 +1359,16 @@ public class MySqlSchemaStatVisitor extends SchemaStatVisitor implements MySqlAS
 
     @Override
     public void endVisit(MySqlShowDatabasePartitionStatusStatement x) {
+
+    }
+
+    @Override
+    public boolean visit(MySqlChecksumTableStatement x) {
+        return true;
+    }
+
+    @Override
+    public void endVisit(MySqlChecksumTableStatement x) {
 
     }
 }

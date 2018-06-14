@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2017 Alibaba Group Holding Ltd.
+ * Copyright 1999-2018 Alibaba Group Holding Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,7 +104,7 @@ public class MySqlUtils {
                 e.printStackTrace();
             }
 
-        } else if (major == 6) {
+        } else if (major == 6 || major == 8) {
             if (method_6_getValue == null && !method_6_getValue_error) {
                 try {
                     class_6_connection = Class.forName("com.mysql.cj.api.jdbc.JdbcConnection");
@@ -348,7 +348,7 @@ public class MySqlUtils {
     public static long getLastPacketReceivedTimeMs(Connection conn) throws SQLException {
         if (class_connectionImpl == null && !class_connectionImpl_Error) {
             try {
-                class_connectionImpl = Utils.loadClass("com.mysql.jdbc.ConnectionImpl");
+                class_connectionImpl = Utils.loadClass("com.mysql.jdbc.MySQLConnection");
             } catch (Throwable error){
                 class_connectionImpl_Error = true;
             }
